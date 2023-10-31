@@ -1,6 +1,8 @@
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.Scanner;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
@@ -9,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public class separacion {
-    private List<String> caminoEncontrado = new LinkedList<String>();
-
     private static class persona {
 
         List<String> amigos = new LinkedList<String>();
@@ -65,48 +65,78 @@ public class separacion {
     }
 
     static int gradoDeSeparacion(Map<String, persona> multitud, String primero, String ultimo) {
-        int grado = 0;
+        List<Integer> caminoEncontrado = new LinkedList<Integer>();
         if (primero.equals(ultimo)) {
-            return grado;
+            return 0;
         } else if (multitud.containsKey(primero)) {
             persona grupoDeAmigos = multitud.get(primero);
             if (grupoDeAmigos.amigos.contains(ultimo)) {
                 return 1;
             } else {
-                Deque<String> predecesores = new ArrayDeque<String>(multitud.size()); 
+                Deque<String> predecesores = new ArrayDeque<String>(); 
                 predecesores.add(primero);
                 for (String i: grupoDeAmigos.amigos) {
-                    grado = 1;
                     System.out.println(i);
-                    grado = gradoDeSeparacionRec(multitud, i, ultimo, grado);
-                    if(grado < -1) {
-                       return grado*(-1); 
-                    }
+                    caminoEncontrado.add(gradoDeSeparacionRec(multitud, predecesores, i, ultimo));
                 }
+                System.out.println(predecesores.toString());
+                System.out.println(caminoEncontrado.toString());
             }
-        } 
-        return -1;
+        
+        }
+        if (minimo(caminoEncontrado) == Integer.MAX_VALUE){
+            return -1;
+        }
+
+        return minimo(caminoEncontrado);
     }
 
-    static int gradoDeSeparacionRec(Map<String, persona> multitud, String primero, String ultimo, int grado) {
-        int g = grado;
+    static int gradoDeSeparacionRec(Map<String, persona> multitud, Deque<String> predecesores, String primero, String ultimo) {
+        String pre = predecesores.getLast();
+        System.out.println("Predecesor principal 1: "+ pre);
         persona grupoDeAmigos = multitud.get(primero);
         if (grupoDeAmigos.amigos.contains(ultimo)) {
-            g++;
-            return g*(-1);
+            System.out.println("Iteracion sobre: "+ primero);
+            System.out.println("Conseguido en "+ primero);
+            System.out.println("Volviendo a predecesor");
+            return predecesores.size()+1;
         } else {
+            List<Integer> arreglo = new LinkedList<Integer>();
+            predecesores.add(primero);
+            System.out.println("");
+            System.out.println("Iteracion sobre: "+ primero);
+            System.out.println("Se agrego "+ primero+ " a la lista de predecesores");
+            System.out.println("");
             for (String i: grupoDeAmigos.amigos) {
-                g++;
-                System.out.println(i);
-                g = gradoDeSeparacionRec(multitud, i, ultimo, g);
-                if(g < -1) {
-                    break; 
+                System.out.println("Iteracion sobre el sucesor: "+ i);
+                if (!predecesores.contains(i)){
+                    arreglo.add(gradoDeSeparacionRec(multitud, predecesores, i, ultimo));
+                    predecesores.add(i);
+                    System.out.println("Lista predecesores coño: "+ predecesores);
                 }
             }
-            return g;
+            System.out.println("Predecesor principal2: "+ pre);
+            reduccionCadena(predecesores, pre);
+            System.out.println("Cadena reducida:"+ predecesores+ " siendo "+ primero);
+            System.out.println("Volviendo a predecesor luego de reducir cadena");
+            return minimo(arreglo);
         }
     }
 
+    static int minimo(List<Integer> arreglo) {
+        int n = Integer.MAX_VALUE;
+        for(Integer i: arreglo) {
+            if (n >= i) {
+                n = i;
+            }
+        }
+        return n;
+    }
+    static void reduccionCadena(Deque<String> predecesores, String primero){
+        while(!predecesores.getLast().equals(primero)) {
+                predecesores.removeLast();
+            }
+    }
     public static void main(String[] args) {
         String primerConector = args[0];
         String ultimoConector = args[1];
@@ -123,7 +153,7 @@ public class separacion {
             }
             
         } catch (Exception e) {
-            grado = -1;
+            grado = -16;
             System.out.print(grado);
         }
     }
