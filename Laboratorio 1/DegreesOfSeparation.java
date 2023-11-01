@@ -43,7 +43,7 @@ public class DegreesOfSeparation {
 
             }
 
-            // Verificacion con el valor izquierdo
+            // Verificacion con el valor derecho
             if (!grupoPersonas.containsKey(t)) {
 
                 persona individuo = new persona();
