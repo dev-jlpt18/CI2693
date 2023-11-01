@@ -96,19 +96,14 @@ public class DegreesOfSeparation {
             }
         
         }
-        /*System.out.println(caminoEncontrado);
+        
         int m = minimo(caminoEncontrado);
         // Verifica si el valor minimo de caminoEncontrado es menor que MAX_VALUE
         if (m == Integer.MAX_VALUE){
             return -1;
         }
 
-        return m;*/
-        if (minimo(caminoEncontrado) == Integer.MAX_VALUE){
-            return -1;
-        }
-
-        return minimo(caminoEncontrado);
+        return m;
     }
 
     // Metodo gradoDeSeparacionRec: Este metodo recibe dos nombre y un hashmap, este recorrera todos los caminos
@@ -148,7 +143,8 @@ public class DegreesOfSeparation {
         }
         return n;
     }
-
+    
+    // Metodo reduccionCadena: Regresa la lista de predecesores hasta el predecesor indicado
     static void reduccionCadena(Deque<String> predecesores, String predecesor){
         while(!predecesores.getLast().equals(predecesor)) {
                 predecesores.removeLast();
