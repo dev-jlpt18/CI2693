@@ -75,12 +75,20 @@ public class separacion {
             } else {
                 Deque<String> predecesores = new ArrayDeque<String>(); 
                 predecesores.add(primero);
+                System.out.println("Iteracion sobre: "+ primero);
+                System.out.println("");
+                System.out.println("{------------ ");
                 for (String i: grupoDeAmigos.amigos) {
-                    System.out.println(i);
-                    caminoEncontrado.add(gradoDeSeparacionRec(multitud, predecesores, i, ultimo));
+                    System.out.println("{++++++++++++++++++++++ Regreso");
+                    
+                    caminoEncontrado.add(gradoDeSeparacionRec(multitud, predecesores, i, ultimo, primero));
+                    System.out.println("Menor camino encontrado en "+i+ " : "+ caminoEncontrado.toString());
+                    System.out.println("++++++++++++++++++++++}");
                 }
+                System.out.println("------------}");
                 System.out.println(predecesores.toString());
                 System.out.println(caminoEncontrado.toString());
+
             }
         
         }
@@ -91,34 +99,38 @@ public class separacion {
         return minimo(caminoEncontrado);
     }
 
-    static int gradoDeSeparacionRec(Map<String, persona> multitud, Deque<String> predecesores, String primero, String ultimo) {
-        String pre = predecesores.getLast();
-        System.out.println("Predecesor principal 1: "+ pre);
+    static int gradoDeSeparacionRec(Map<String, persona> multitud, Deque<String> predecesores, String primero, String ultimo, String r) {
+        String pre = primero;
+        System.out.println("     Predecesor principal : "+ r);
+        System.out.println("     Iteracion sobre: "+ pre);
+        System.out.println("{************** ");
         persona grupoDeAmigos = multitud.get(primero);
         if (grupoDeAmigos.amigos.contains(ultimo)) {
-            System.out.println("Iteracion sobre: "+ primero);
-            System.out.println("Conseguido en "+ primero);
-            System.out.println("Volviendo a predecesor");
+            System.out.println("        Conseguido en "+ primero);
+            System.out.println("        Volviendo a predecesor: "+ predecesores.size());
+            System.out.println("        Volviendo a predecesor: "+ r);
+            System.out.println("*************}");
             return predecesores.size()+1;
         } else {
             List<Integer> arreglo = new LinkedList<Integer>();
             predecesores.add(primero);
             System.out.println("");
-            System.out.println("Iteracion sobre: "+ primero);
-            System.out.println("Se agrego "+ primero+ " a la lista de predecesores");
+            System.out.println("        Se agrego "+ primero + " a la lista de predecesores");
             System.out.println("");
             for (String i: grupoDeAmigos.amigos) {
-                System.out.println("Iteracion sobre el sucesor: "+ i);
+                System.out.println("    Iteracion sobre el sucesor: "+ i);
                 if (!predecesores.contains(i)){
-                    arreglo.add(gradoDeSeparacionRec(multitud, predecesores, i, ultimo));
-                    predecesores.add(i);
-                    System.out.println("Lista predecesores coño: "+ predecesores);
+                    arreglo.add(gradoDeSeparacionRec(multitud, predecesores, i, ultimo, primero));
+                    System.out.println("       Lista predecesores: "+ predecesores);
                 }
             }
-            System.out.println("Predecesor principal2: "+ pre);
-            reduccionCadena(predecesores, pre);
-            System.out.println("Cadena reducida:"+ predecesores+ " siendo "+ primero);
-            System.out.println("Volviendo a predecesor luego de reducir cadena");
+            System.out.println("///////Terminada recursion");
+            System.out.println("tamaño del arreglo "+ arreglo.toString());
+            System.out.println("Menor camino encontrado en "+primero+ " : "+ minimo(arreglo));
+            reduccionCadena(predecesores, r);
+            System.out.println("    Cadena reducida:"+ predecesores+ " siendo "+ r);
+            System.out.println("    Volviendo a predecesor luego de reducir cadena");
+            System.out.println("}");
             return minimo(arreglo);
         }
     }
