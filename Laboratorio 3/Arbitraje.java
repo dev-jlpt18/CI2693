@@ -58,8 +58,6 @@ public class Arbitraje {
     static boolean tradingREC(HashMap<String, moneda> pares, String monedaInicial, String monedaActual, Double ganancia) {
         Double cambio;
             for (Map.Entry<String, Double> i: pares.get(monedaActual).getPares().entrySet()) {
-                System.out.println("moneda actual rec: "+monedaActual);
-                System.out.println("moneda secuandario rec: "+i.getKey());
                 if(pares.containsKey(i.getKey())) {
                     if(i.getKey().equals(monedaInicial)) {
                         cambio = conversion(ganancia, i.getValue());
@@ -124,13 +122,6 @@ public class Arbitraje {
             File file = new File("tasas.txt");
             Scanner sc = new Scanner(file);
             HashMap<String, moneda> listaDeMonedas = lecturaTXT(sc);
-            for(Map.Entry<String, moneda>i:  listaDeMonedas.entrySet()) {
-                System.out.println(i.getKey());
-                for(Map.Entry<String, Double>j:  i.getValue().getPares().entrySet()) {
-                    System.out.println(j.toString());
-                }
-            }
-            
             if(trading(listaDeMonedas)) {
                 System.out.println("DINERO FACIL DESDE TU CASA");
             } else {
