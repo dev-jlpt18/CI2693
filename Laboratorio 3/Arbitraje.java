@@ -31,17 +31,20 @@ public class Arbitraje {
     static boolean trading(HashMap<String, moneda> pares) {
         Double ganancia;
         for (Map.Entry<String, moneda> i: pares.entrySet()) {
+            System.out.println("moneda actual: "+i.getKey());
             ganancia = 1.0;
             i.getValue().changeVisitado(true);
             for (Map.Entry<String, Double> j: i.getValue().getPares().entrySet()) {
+                if (pares.containsKey(j.getKey())) {
+                    pares.get(j.getKey()).changeVisitado(true);
+                    ganancia = conversion(ganancia, j.getValue());
                 
-                pares.get(j.getKey()).changeVisitado(true);
-                ganancia = conversion(ganancia, j.getValue());
-                
-                if(tradingREC(pares, i.getKey(), j.getKey(), 1, ganancia)) {
-                    return true;
+                    if(tradingREC(pares, i.getKey(), j.getKey(), ganancia)) {
+                        return true;
+                    }
+                    pares.get(j.getKey()).changeVisitado(false);
                 }
-                pares.get(j.getKey()).changeVisitado(false);
+            
             }
             i.getValue().changeVisitado(false);
         }
@@ -52,40 +55,28 @@ public class Arbitraje {
         return base*cambio;
     }
 
-    static boolean tradingREC(HashMap<String, moneda> pares, String monedaInicial, String monedaActual, Integer iteracion, Double ganancia) {
+    static boolean tradingREC(HashMap<String, moneda> pares, String monedaInicial, String monedaActual, Double ganancia) {
         Double cambio;
-        if(iteracion == 1) {
             for (Map.Entry<String, Double> i: pares.get(monedaActual).getPares().entrySet()) {
-                
-                if(!i.getKey().equals(monedaInicial)) {
-                    pares.get(i.getKey()).changeVisitado(true);
-                    cambio = conversion(ganancia, i.getValue());
-                    
-                    if(tradingREC(pares, monedaInicial, i.getKey(), 2, cambio)) {
-                        return true;
+                System.out.println("moneda actual rec: "+monedaActual);
+                System.out.println("moneda secuandario rec: "+i.getKey());
+                if(pares.containsKey(i.getKey())) {
+                    if(i.getKey().equals(monedaInicial)) {
+                        cambio = conversion(ganancia, i.getValue());
+                        if (cambio > 1.0) {
+                            return true;
+                        }
+                    } else if(!pares.get(i.getKey()).getVisitado()){
+                        pares.get(i.getKey()).changeVisitado(true);
+                        cambio = conversion(ganancia, i.getValue());
+                        if(tradingREC(pares, monedaInicial, i.getKey(), cambio)) {
+                            return true;
+                        }
+                        pares.get(i.getKey()).changeVisitado(false);
                     }
-                    pares.get(i.getKey()).changeVisitado(false);
                 }
             }
             return false;
-        } else {
-            for (Map.Entry<String, Double> i: pares.get(monedaActual).getPares().entrySet()) {
-                if(i.getKey().equals(monedaInicial)) {
-                    cambio = conversion(ganancia, i.getValue());
-                    if (cambio >= 1.0) {
-                        return true;
-                    }
-                } else if(!pares.get(i.getKey()).getVisitado()){
-                    pares.get(i.getKey()).changeVisitado(true);
-                    cambio = conversion(ganancia, i.getValue());
-                    if(tradingREC(pares, monedaInicial, i.getKey(), 2, cambio)) {
-                        return true;
-                    }
-                    pares.get(i.getKey()).changeVisitado(false);
-                }
-            }
-            return false;
-        }
     }
 
     public static class moneda {
@@ -133,6 +124,13 @@ public class Arbitraje {
             File file = new File("tasas.txt");
             Scanner sc = new Scanner(file);
             HashMap<String, moneda> listaDeMonedas = lecturaTXT(sc);
+            for(Map.Entry<String, moneda>i:  listaDeMonedas.entrySet()) {
+                System.out.println(i.getKey());
+                for(Map.Entry<String, Double>j:  i.getValue().getPares().entrySet()) {
+                    System.out.println(j.toString());
+                }
+            }
+            
             if(trading(listaDeMonedas)) {
                 System.out.println("DINERO FACIL DESDE TU CASA");
             } else {
